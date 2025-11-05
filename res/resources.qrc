@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ICON/ToolBar/Circle.svg</file>
+        <file>ICON/ToolBar/Circle_Active.svg</file>
+        <file>ICON/ToolBar/Ellipse.svg</file>
+        <file>ICON/ToolBar/Ellipse_Active.svg</file>
+        <file>ICON/ToolBar/Line.svg</file>
+        <file>ICON/ToolBar/Line_Active.svg</file>
+        <file>ICON/ToolBar/Move.svg</file>
+        <file>ICON/ToolBar/Move_Active.svg</file>
+        <file>ICON/ToolBar/Path.svg</file>
+        <file>ICON/ToolBar/Path_Active.svg</file>
+        <file>ICON/ToolBar/Polygon.svg</file>
+        <file>ICON/ToolBar/Polygon_Active.svg</file>
+        <file>ICON/ToolBar/Rectangle.svg</file>
+        <file>ICON/ToolBar/Rectangle_Active.svg</file>
+        <file>QML/ToolBar.qml</file>
+    </qresource>
+</RCC>

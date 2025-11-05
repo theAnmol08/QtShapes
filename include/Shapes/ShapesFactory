@@ -1,0 +1,37 @@
+#pragma once
+
+#include "ShapeBase.h"
+#include "Line.h"
+#include "Ellipse.h"
+#include "Rectangle.h"
+#include "Polygon.h"
+
+
+class ShapeFactory {
+public:
+    enum ToolType {
+        Move,
+        Line,
+        Ellipse,
+        Rectangle,
+        Path,
+        Polygon
+    };
+
+    static std::shared_ptr<Shapes::ShapeBase> createShape(ToolType tool, const QPointF& scenePos) {
+        switch (tool) {
+        case ToolType::Line:
+            return std::make_shared<Shapes::Line>(scenePos);
+        case ToolType::Ellipse:
+            return std::make_shared<Shapes::Ellipse>(scenePos);
+        case ToolType::Rectangle:
+            return std::make_shared<Shapes::Rectangle>(scenePos);
+        case ToolType::Polygon:
+            return std::make_shared<Shapes::Polygon>(scenePos);
+        case ToolType::Path:
+            return nullptr;
+        default:
+            return nullptr;
+        }
+    }
+};
