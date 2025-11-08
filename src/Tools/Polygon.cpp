@@ -1,4 +1,7 @@
 #include "Polygon.h"
+
+#include <QKeyEvent>
+
 using namespace Shapes;
 
 Polygon::Polygon(const QPointF &pos, QGraphicsItem *parent) : QGraphicsPolygonItem(parent) {
@@ -9,16 +12,15 @@ Polygon::Polygon(const QPointF &pos, QGraphicsItem *parent) : QGraphicsPolygonIt
 
     setAcceptHoverEvents(true);
     setFlag(QGraphicsItem::ItemIsMovable);
-    sides = 3;
+    sides = 8;
 }
 
-QPolygonF Polygon::getRegularPolygon(int sides, double radius, QPointF center, double startAngleDeg)
-{
+QPolygonF Polygon::getRegularPolygon(int sides, double radius, QPointF center) {
     QPolygonF polygon;
     if (sides < 3)
         return polygon;
 
-    double startAngleRad = qDegreesToRadians(startAngleDeg);
+    double startAngleRad = qDegreesToRadians(0);
 
     for (int i = 0; i < sides; ++i) {
         double angle = startAngleRad + (2 * M_PI * i) / sides;
@@ -31,19 +33,21 @@ QPolygonF Polygon::getRegularPolygon(int sides, double radius, QPointF center, d
 }
 
 void Polygon::mouseMove(double x, double y, Qt::KeyboardModifiers key) {
-    qDebug() << key << __FUNCTION__;
+    QLineF line(mapFromScene(scenePos()), mapFromScene(QPointF(x, y)));
+    double hypotenuse = line.length();
+    double theta = line.angle();
 
-    QLineF line(scenePos(), QPointF(x, y));
+    qDebug() << __FUNCTION__ << theta << key;
 
-    // Get distance from center to mouse
-    double radius = line.length();
+    if((theta < 135 && theta > 45) || (theta < 315 && theta > 225)) {
+        theta = abs(sin(qDegreesToRadians(theta)));
+    }
+    else {
+        theta = abs(cos(qDegreesToRadians(theta)));
+    }
 
-    // Get angle from center to mouse (Qt returns degrees from horizontal)
-    double angleToMouse = -line.angle(); // negative to correct Qt’s inverted y-axis
-
-    // Now make polygon facing mouse
-    setPolygon(getRegularPolygon(sides, radius, scenePos(), angleToMouse));
-    // setPolygon(getRegularPolygon(sides, QLineF(scenePos(), QPointF(x,y)).length(), scenePos()));
+    double radius = hypotenuse * theta;
+    setPolygon(getRegularPolygon(sides, radius, mapFromScene(scenePos())));
 
     selectionRect->setRect(boundingRect());
     // markers[MarkerType::TopLeft]->setPos(boundingRect().topLeft());
@@ -93,6 +97,17 @@ void Polygon::mouseReleaseEvent(QGraphicsSceneMouseEvent *) {
 void Polygon::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *) {
     itemSelected = !itemSelected;
     select(itemSelected);
+}
+
+void Polygon::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_Up)
+        ++sides;
+    else if(event->key() == Qt::Key_Down && sides > 3)
+        --sides;
+}
+
+void Polygon::keyReleaseEvent(QKeyEvent *) {
+
 }
 
 //--------------------------------------------------------------------------//

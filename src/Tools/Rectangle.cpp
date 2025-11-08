@@ -3,9 +3,6 @@ using namespace Shapes;
 
 Rectangle::Rectangle(const QPointF &pos, QGraphicsItem *parent) : QGraphicsRectItem(parent) {
     setPos(pos);
-    QPen pen(Qt::DotLine);
-    pen.setWidth(1);
-    selectionRect->setPen(pen);
     selectionRect->setParentItem(this);
     setPen(currentPen);
     setBrush(currentBrush);
@@ -27,8 +24,15 @@ Rectangle::Rectangle(const QPointF &pos, QGraphicsItem *parent) : QGraphicsRectI
     };
 
     auto rectangle = [&](QPointF center, QPointF mousePos) -> QRectF {
-        double width = abs(center.x() - mousePos.x());
-        double height = abs(center.y() - mousePos.y());
+        QLineF line(center, mousePos);
+        double hypotenuse = line.length();
+        double theta = line.angle() + rotation();
+
+        double width = hypotenuse * abs(cos(qDegreesToRadians(theta)));
+        double height = hypotenuse * abs(sin(qDegreesToRadians(theta)));
+        handleAngle = line.angle();
+        prevRotation = -rotation();
+
         return QRectF(-width, -height, 2 * width, 2 * height);
     };
 
@@ -43,7 +47,15 @@ Rectangle::Rectangle(const QPointF &pos, QGraphicsItem *parent) : QGraphicsRectI
 }
 
 void Rectangle::mouseMove(double x, double y, Qt::KeyboardModifiers key) {
-    QLineF line(scenePos(), QPointF(x,y));
+    bool ctrlPressed = (key & Qt::ControlModifier);
+
+    if(ctrlPressed) {
+        QLineF ln(scenePos(), QPointF(x,y));
+        qreal delta = ln.angle() - handleAngle;
+        setRotation(-(prevRotation + delta));
+        return;
+    }
+
     bool shiftPressed = key & Qt::ShiftModifier;
     QRectF rec = typeStore[shiftPressed](scenePos(), QPointF(x,y));
     setRect(rec);
@@ -55,7 +67,11 @@ void Rectangle::mouseMove(double x, double y, Qt::KeyboardModifiers key) {
     markers[MarkerType::BottomRight]->setPos(boundingRect().bottomRight());
 }
 
-void Rectangle::mousePress(double x, double y, Qt::KeyboardModifiers key) {
+void Ellipse::mousePress(double x, double y, Qt::KeyboardModifiers ) {
+    QLineF ln(scenePos(), QPointF(x,y));
+    handleAngle = ln.angle();
+    prevRotation = -rotation();
+    qDebug() << " handleAngle, prevRotation " << handleAngle << prevRotation;
 }
 
 QGraphicsItem *Rectangle::getParent() {

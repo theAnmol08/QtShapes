@@ -36,7 +36,7 @@ private:
     double m_height;
     std::array<std::unique_ptr<Shapes::Marker>, 4> markers;
 
-    QPolygonF getRegularPolygon(int sides, double radius, QPointF center, double startAngleDeg);
+    QPolygonF getRegularPolygon(int sides, double radius, QPointF center);
 
     void mouseMove(double x, double y, Qt::KeyboardModifiers key) override;
     void mousePress(double x, double y, Qt::KeyboardModifiers key) override;
@@ -48,6 +48,8 @@ private:
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 };
 }
 #endif // POLYGON_H
