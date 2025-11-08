@@ -55,11 +55,13 @@ public:
     }
 
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override {
-        parent->mousePress(event->scenePos().x(), scenePos().y(), event->modifiers());
+        QPointF posInScene = event->scenePos();
+        parent->mousePress(posInScene.x(), posInScene.y(), event->modifiers());
     }
 
     void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override {
-        parent->mouseMove(event->scenePos().x(), event->scenePos().y(), event->modifiers());
+        QPointF posInScene = event->scenePos();
+        parent->mouseMove(posInScene.x(), posInScene.y(), event->modifiers());
     }
 
     void mouseReleaseEvent(QGraphicsSceneMouseEvent *) override {

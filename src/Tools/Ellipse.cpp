@@ -6,7 +6,6 @@ Ellipse::Ellipse(const QPointF &pos, QGraphicsItem *parent) : QGraphicsEllipseIt
     selectionRect->setParentItem(this);
     setPen(currentPen);
     setBrush(currentBrush);
-    setStartAngle(270);
 
     auto circle = [&](QPointF center, QPointF mousePos) -> QRectF {
         QLineF line(center, mousePos);
@@ -25,8 +24,15 @@ Ellipse::Ellipse(const QPointF &pos, QGraphicsItem *parent) : QGraphicsEllipseIt
     };
 
     auto ellipse = [&](QPointF center, QPointF mousePos) -> QRectF {
-        double width = abs(center.x() - mousePos.x());
-        double height = abs(center.y() - mousePos.y());
+        QLineF line(center, mousePos);
+        double hypotenuse = line.length();
+        double theta = line.angle() + rotation();
+
+        double width = hypotenuse * abs(cos(qDegreesToRadians(theta)));
+        double height = hypotenuse * abs(sin(qDegreesToRadians(theta)));
+        handleAngle = line.angle();
+        prevRotation = -rotation();
+
         return QRectF(-width, -height, 2 * width, 2 * height);
     };
 
@@ -41,6 +47,15 @@ Ellipse::Ellipse(const QPointF &pos, QGraphicsItem *parent) : QGraphicsEllipseIt
 }
 
 void Ellipse::mouseMove(double x, double y, Qt::KeyboardModifiers key) {
+    bool ctrlPressed = (key & Qt::ControlModifier);
+
+    if(ctrlPressed) {
+        QLineF ln(scenePos(), QPointF(x,y));
+        qreal delta = ln.angle() - handleAngle;
+        setRotation(-(prevRotation + delta));
+        return;
+    }
+
     bool shiftPressed = key & Qt::ShiftModifier;
     QRectF rec = typeStore[shiftPressed](scenePos(), QPointF(x,y));
     setRect(rec);
@@ -52,7 +67,11 @@ void Ellipse::mouseMove(double x, double y, Qt::KeyboardModifiers key) {
     markers[MarkerType::BottomRight]->setPos(boundingRect().bottomRight());
 }
 
-void Ellipse::mousePress(double, double, Qt::KeyboardModifiers ) {
+void Ellipse::mousePress(double x, double y, Qt::KeyboardModifiers ) {
+    QLineF ln(scenePos(), QPointF(x,y));
+    handleAngle = ln.angle();
+    prevRotation = -rotation();
+    qDebug() << " handleAngle, prevRotation " << handleAngle << prevRotation;
 }
 
 QGraphicsItem *Ellipse::getParent() {
