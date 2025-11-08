@@ -32,6 +32,8 @@ private:
     QString m_qml;
     double m_width;
     double m_height;
+    double handleAngle;
+    double prevRotation;
     std::array<std::function<QRectF(QPointF, QPointF)>, 2> typeStore;
     std::array<std::unique_ptr<Shapes::Marker>, 4> markers;
 

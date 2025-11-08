@@ -1,8 +1,7 @@
 #include "GraphicsView.h"
 #include <QDebug>
 
-GraphicsView::GraphicsView(QWidget *parent)
-    : QGraphicsView(parent) {
+GraphicsView::GraphicsView(QWidget *parent) : QGraphicsView(parent) {
     setRenderHint(QPainter::Antialiasing);
     setTransformationAnchor(AnchorUnderMouse);
     setResizeAnchor(NoAnchor);
